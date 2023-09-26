@@ -18,7 +18,7 @@ step_sleep = 0.002
 step_count = int(round((angle/360)*4096))
 
 #false for anticlock and True for clock
-direction = False
+direction = True
 
 step_sequence = [
                   [1,0,0,1],
