@@ -2,11 +2,12 @@ import RPi.GPIO as GPIO
 import time
 import argparse
 import gmapintegration
+import stepperdriver
 
 #sudo python3 compass.py --port=<UDP-PORT> --ip="<IPV4>" --key="<GMAP-API-KEY>"
 
 
-def processangle(DEVICE_IPV4:str, DEVICE_UDP_PORT:int, API_KEY:str, PLACE:str) -> int:
+def processangle(PLACE:str) -> int:
 
   dev_coordinates = gmapintegration.get_device_coordinates(DEVICE_IPV4, DEVICE_UDP_PORT)
   loc_coordinates = gmapintegration.get_destination_coordinates(dev_coordinates, PLACE, API_KEY)
@@ -32,7 +33,7 @@ def setkeypad(rows:list, columns:list) -> None:
     GPIO.setup(c_gpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
-def readline(line:int, characters:list, columns:list, device_ipv4:str, device_udp_port:int, api_key:str) -> None:
+def readline(line:int, characters:list, columns:list) -> None:
 
   GPIO.output(line, GPIO.HIGH)
 
@@ -42,10 +43,21 @@ def readline(line:int, characters:list, columns:list, device_ipv4:str, device_ud
 
       place = characters[x]
       print(place)
-      final_angle = processangle(device_ipv4, device_udp_port, api_key, place)
+      final_angle = processangle(place)
       print(final_angle)
+      stepperdriver.driver_stepper(final_angle, MOTOR_PINS)
 
   GPIO.output(line, GPIO.LOW)
+
+def gpiocleanup():
+    
+    all_gpios = []
+    all_gpios.extend(ROW_GPIOS)
+    all_gpios.extend(MOTOR_PINS)
+
+    for g_pin in all_gpios:
+      GPIO.output(g_pin, GPIO.LOW)
+    GPIO.cleanup()
 
 
 if __name__=="__main__":
@@ -67,6 +79,10 @@ if __name__=="__main__":
   KEYPAD_CHECK_INTERVAL = 0.25
   setkeypad(ROW_GPIOS, COLUMN_GPIOS)
 
+  #Setting up stepper motor
+  MOTOR_PINS = [17, 18, 27, 22]
+  stepperdriver.steppersetup(MOTOR_PINS)
+
   places = [
             ["Automobile Service", "Hospital", "Police Station", "Petrol Pump"],
             ["Mall", "Pizza", "Bank", "Post Office"],
@@ -78,9 +94,10 @@ if __name__=="__main__":
     while True:
 
       for i in range(len(places)):
-        readline(ROW_GPIOS[i], places[i], COLUMN_GPIOS, DEVICE_IPV4, DEVICE_UDP_PORT, API_KEY)
+        readline(ROW_GPIOS[i], places[i], COLUMN_GPIOS)
 
       time.sleep(KEYPAD_CHECK_INTERVAL)
 
   except KeyboardInterrupt:
     print("Closed")
+    gpiocleanup()
