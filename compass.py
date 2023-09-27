@@ -8,15 +8,14 @@ import gmapintegration
 
 def processangle(DEVICE_IPV4:str, DEVICE_UDP_PORT:int, API_KEY:str, PLACE:str) -> int:
 
-    dev_coordinates = gmapintegration.get_device_coordinates(DEVICE_IPV4, DEVICE_UDP_PORT)
-    loc_coordinates = gmapintegration.get_destination_coordinates(dev_coordinates, PLACE, API_KEY)
-    BEARING_ANGLE = gmapintegration.get_bearing_angle((float(dev_coordinates[0]), float(dev_coordinates[1])), loc_coordinates[:2])
-    HEADING_ANGLE = gmapintegration.get_heading(DEVICE_IPV4, DEVICE_UDP_PORT)
-    FINAL_ANGLE = gmapintegration.final_angle(BEARING_ANGLE, HEADING_ANGLE)
+  dev_coordinates = gmapintegration.get_device_coordinates(DEVICE_IPV4, DEVICE_UDP_PORT)
+  loc_coordinates = gmapintegration.get_destination_coordinates(dev_coordinates, PLACE, API_KEY)
+  BEARING_ANGLE = gmapintegration.get_bearing_angle((float(dev_coordinates[0]), float(dev_coordinates[1])), loc_coordinates[:2])
+  HEADING_ANGLE = gmapintegration.get_heading(DEVICE_IPV4, DEVICE_UDP_PORT)
+  FINAL_ANGLE = gmapintegration.final_angle(BEARING_ANGLE, HEADING_ANGLE)
 
-    print(f"place:{loc_coordinates[2]} {loc_coordinates[3]}")
-
-    return FINAL_ANGLE
+  print(f"place:{loc_coordinates[2]} {loc_coordinates[3]}")
+  return FINAL_ANGLE
 
 
 def setkeypad(rows:list, columns:list) -> None:
@@ -35,38 +34,18 @@ def setkeypad(rows:list, columns:list) -> None:
 
 def readline(line:int, characters:list, columns:list, device_ipv4:str, device_udp_port:int, api_key:str) -> None:
 
-    GPIO.output(line, GPIO.HIGH)
+  GPIO.output(line, GPIO.HIGH)
 
-    if(GPIO.input(columns[0]) == 1):
+  for x in range(4):
 
-        place = characters[0]
-        print(place)
-        final_angle = processangle(device_ipv4, device_udp_port, api_key, place)
-        print(final_angle)
+    if(GPIO.input(columns[x]) == 1):
 
-    if(GPIO.input(columns[1]) == 1):
+      place = characters[x]
+      print(place)
+      final_angle = processangle(device_ipv4, device_udp_port, api_key, place)
+      print(final_angle)
 
-        place = characters[1]
-        print(place)
-        final_angle = processangle(device_ipv4, device_udp_port, api_key, place)
-        print(final_angle)
-
-    if(GPIO.input(columns[2]) == 1):
-
-        place = characters[2]
-        print(place)
-        final_angle = processangle(device_ipv4, device_udp_port, api_key, place)
-        print(final_angle)
-
-    if(GPIO.input(columns[3]) == 1):
-
-        place = characters[3]
-        print(place)
-        final_angle = processangle(device_ipv4, device_udp_port, api_key, place)
-        print(final_angle)
-
-
-    GPIO.output(line, GPIO.LOW)
+  GPIO.output(line, GPIO.LOW)
 
 
 if __name__=="__main__":
@@ -88,12 +67,19 @@ if __name__=="__main__":
   KEYPAD_CHECK_INTERVAL = 0.25
   setkeypad(ROW_GPIOS, COLUMN_GPIOS)
 
+  places = [
+            ["Automobile Service", "Hospital", "Police Station", "Petrol Pump"],
+            ["Mall", "Pizza", "Bank", "Post Office"],
+            ["Stadium", "Railway Station", "Airport", "Gym"],
+            ["Hotel", "Restaurant", "School", "Reset"]
+  ]
+
   try:
     while True:
-      readline(ROW_GPIOS[0], ["Automobile Service", "Hospital", "Police Station", "Petrol Pump"], COLUMN_GPIOS, DEVICE_IPV4, DEVICE_UDP_PORT, API_KEY)
-      readline(ROW_GPIOS[1], ["Mall", "Pizza", "Bank", "Post Office"], COLUMN_GPIOS, DEVICE_IPV4, DEVICE_UDP_PORT, API_KEY)
-      readline(ROW_GPIOS[2], ["Stadium", "Railway Station", "Airport", "Gym"], COLUMN_GPIOS, DEVICE_IPV4, DEVICE_UDP_PORT, API_KEY)
-      readline(ROW_GPIOS[3], ["Hotel", "Restaurant", "School", "Reset"], COLUMN_GPIOS, DEVICE_IPV4, DEVICE_UDP_PORT, API_KEY)
+
+      for i in range(len(places)):
+        readline(ROW_GPIOS[i], places[i], COLUMN_GPIOS, DEVICE_IPV4, DEVICE_UDP_PORT, API_KEY)
+
       time.sleep(KEYPAD_CHECK_INTERVAL)
 
   except KeyboardInterrupt:
