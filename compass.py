@@ -35,6 +35,8 @@ def setkeypad(rows:list, columns:list) -> None:
 
 def readline(line:int, characters:list, columns:list) -> None:
 
+  global step_reset
+
   GPIO.output(line, GPIO.HIGH)
 
   for x in range(4):
@@ -43,9 +45,15 @@ def readline(line:int, characters:list, columns:list) -> None:
 
       place = characters[x]
       print(place)
-      final_angle = processangle(place)
-      print(final_angle)
-      stepperdriver.driver_stepper(final_angle, MOTOR_PINS)
+      
+      if place == "Reset":
+        stepperdriver.driver_stepper(step_reset, MOTOR_PINS)
+        
+      else:
+        final_angle = processangle(place)
+        print(final_angle)
+        stepperdriver.driver_stepper(final_angle, MOTOR_PINS)
+        step_reset = -final_angle
 
   GPIO.output(line, GPIO.LOW)
 
@@ -82,6 +90,9 @@ if __name__=="__main__":
   #Setting up stepper motor
   MOTOR_PINS = [17, 18, 27, 22]
   stepperdriver.steppersetup(MOTOR_PINS)
+
+  #Stepper reset angle
+  step_reset = 0
 
   places = [
             ["Automobile Service", "Hospital", "Police Station", "Petrol Pump"],

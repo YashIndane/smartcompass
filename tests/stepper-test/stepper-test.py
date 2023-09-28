@@ -11,7 +11,7 @@ in3 = 27
 in4 = 22
 
 #rotation angle in degress
-angle = 120
+angle = 122
 
 step_sleep = 0.002
 
