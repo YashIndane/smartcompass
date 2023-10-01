@@ -3,6 +3,7 @@ import time
 import argparse
 import gmapintegration
 import stepperdriver
+import compasseffect
 
 #sudo python3 compass.py --port=<UDP-PORT> --ip="<IPV4>" --key="<GMAP-API-KEY>"
 
@@ -48,12 +49,18 @@ def readline(line:int, characters:list, columns:list) -> None:
       
       if place == "Reset":
         stepperdriver.driver_stepper(step_reset, MOTOR_PINS)
+        step_reset = 0
         
       else:
-        final_angle = processangle(place)
-        print(final_angle)
-        stepperdriver.driver_stepper(final_angle, MOTOR_PINS)
-        step_reset = -final_angle
+
+        if step_reset == 0:
+          final_angle = processangle(place)
+          print(final_angle)
+          stepperdriver.driver_stepper(final_angle, MOTOR_PINS)
+          #compasseffect.compass_effect_driver(DEVICE_IPV4, DEVICE_UDP_PORT, MOTOR_PINS) 
+          step_reset = -final_angle
+        else:
+          print("First press reset and then select next place!!")
 
   GPIO.output(line, GPIO.LOW)
 
@@ -68,7 +75,7 @@ def gpiocleanup():
     GPIO.cleanup()
 
 
-if __name__=="__main__":
+if __name__ == "__main__":
 
   #Parsing args
   parser = argparse.ArgumentParser()

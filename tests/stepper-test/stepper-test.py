@@ -11,9 +11,9 @@ in3 = 27
 in4 = 22
 
 #rotation angle in degress
-angle = 122
+angle = 90
 
-step_sleep = 0.002
+step_sleep = 0.001
 
 step_count = int(round((angle/360)*4096))
 

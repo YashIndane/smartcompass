@@ -20,14 +20,14 @@ def cleanup(motor_pins:list):
 
   for m_pins in motor_pins:
     GPIO.output(m_pins, GPIO.LOW)
-  GPIO.cleanup()
+  #GPIO.cleanup()
 
 
 def driver_stepper(angle:int, motor_pins:list) -> None:
   
   step_count = int(round((abs(angle)/360)*4096))
   motor_step_counter = 0
-  STEP_SLEEP = 0.001
+  STEP_SLEEP = 0.002
   direction = angle > 0
 
   step_sequence = [
@@ -62,9 +62,4 @@ def driver_stepper(angle:int, motor_pins:list) -> None:
     exit(1)
 
   cleanup(motor_pins)
-  exit(0)
-
-
-pinss = [17, 18, 27, 22]
-steppersetup(pinss)
-driver_stepper(-180, pinss)
+  #exit(0)
