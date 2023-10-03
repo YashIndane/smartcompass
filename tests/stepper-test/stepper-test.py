@@ -11,14 +11,14 @@ in3 = 27
 in4 = 22
 
 #rotation angle in degress
-angle = 90
+angle = 164
 
 step_sleep = 0.001
 
 step_count = int(round((angle/360)*4096))
 
 #false for anticlock and True for clock
-direction = False
+direction = True
 
 step_sequence = [
                   [1,0,0,1],

@@ -57,8 +57,8 @@ def readline(line:int, characters:list, columns:list) -> None:
           final_angle = processangle(place)
           print(final_angle)
           stepperdriver.driver_stepper(final_angle, MOTOR_PINS)
-          #compasseffect.compass_effect_driver(DEVICE_IPV4, DEVICE_UDP_PORT, MOTOR_PINS) 
-          step_reset = -final_angle
+          reset_angle_correction = compasseffect.compass_effect_driver(DEVICE_IPV4, DEVICE_UDP_PORT, MOTOR_PINS, ROW_GPIOS, COLUMN_GPIOS) 
+          step_reset = -final_angle + reset_angle_correction
         else:
           print("First press reset and then select next place!!")
 
