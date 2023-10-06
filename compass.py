@@ -1,13 +1,16 @@
+#!/usr/bin/python3
+
+
 import RPi.GPIO as GPIO
 import time
 import argparse
+import logging
 import gmapintegration
 import stepperdriver
 import compasseffect
 
-#sudo python3 compass.py --port=<UDP-PORT> --ip="<IPV4>" --key="<GMAP-API-KEY>"
 
-
+#Calls the gmapintefration module to get the nearest place name and the final angle
 def processangle(PLACE:str) -> int:
 
   dev_coordinates = gmapintegration.get_device_coordinates(DEVICE_IPV4, DEVICE_UDP_PORT)
@@ -16,10 +19,11 @@ def processangle(PLACE:str) -> int:
   HEADING_ANGLE = gmapintegration.get_heading(DEVICE_IPV4, DEVICE_UDP_PORT)
   FINAL_ANGLE = gmapintegration.final_angle(BEARING_ANGLE, HEADING_ANGLE)
 
-  print(f"place:{loc_coordinates[2]} {loc_coordinates[3]}")
+  logging.info(f"place:{loc_coordinates[2]} {loc_coordinates[3]}")
   return FINAL_ANGLE
 
 
+#Sets the RPI pins to interface the keypad
 def setkeypad(rows:list, columns:list) -> None:
 
   GPIO.setwarnings(False)
@@ -34,6 +38,7 @@ def setkeypad(rows:list, columns:list) -> None:
     GPIO.setup(c_gpio, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 
+#Reads the keypad
 def readline(line:int, characters:list, columns:list) -> None:
 
   global step_reset
@@ -45,7 +50,7 @@ def readline(line:int, characters:list, columns:list) -> None:
     if(GPIO.input(columns[x]) == 1):
 
       place = characters[x]
-      print(place)
+      logging.info(place)
       
       if place == "Reset":
         stepperdriver.driver_stepper(step_reset, MOTOR_PINS)
@@ -55,15 +60,17 @@ def readline(line:int, characters:list, columns:list) -> None:
 
         if step_reset == 0:
           final_angle = processangle(place)
-          print(final_angle)
+          logging.info(final_angle)
           stepperdriver.driver_stepper(final_angle, MOTOR_PINS)
           reset_angle_correction = compasseffect.compass_effect_driver(DEVICE_IPV4, DEVICE_UDP_PORT, MOTOR_PINS, ROW_GPIOS, COLUMN_GPIOS) 
           step_reset = -final_angle + reset_angle_correction
         else:
-          print("First press reset and then select next place!!")
+          logging.info("First press reset and then select next place!!")
 
   GPIO.output(line, GPIO.LOW)
 
+
+#Cleans up the GPIO pins before exiting
 def gpiocleanup():
     
     all_gpios = []
@@ -77,11 +84,17 @@ def gpiocleanup():
 
 if __name__ == "__main__":
 
+  #Set logging configuration
+  logging.basicConfig(level=logging.NOTSET)
+
   #Parsing args
   parser = argparse.ArgumentParser()
   parser.add_argument("--ip", required=True, type=str, help="IPV4 of the RPI")
   parser.add_argument("--port", required=True, type=int, help="UDP port of the RPI")
   parser.add_argument("--key", required=True, type=str, help="Google Maps API key")
+  parser.add_argument("--keypad_rows", required=True, type=str, help="Comma seperated GPIO pins for keypad rows")
+  parser.add_argument("--keypad_cols", required=True, type=str, help="Comma seperated GPIO pins for keypad columns")
+  parser.add_argument("--motor_pins", required=True, type=str, help="Comma seprated GPIO pins for stepper motor pins")
 
   args = parser.parse_args()
   DEVICE_IPV4 = args.ip
@@ -89,14 +102,16 @@ if __name__ == "__main__":
   API_KEY = args.key
 
   #Setting up keypad
-  ROW_GPIOS = [16, 20, 21, 5]
-  COLUMN_GPIOS = [6, 13, 19, 26]
+  ROW_GPIOS = [int(p) for p in args.keypad_rows.split(",")]
+  COLUMN_GPIOS = [int(q) for q in args.keypad_cols.split(",")]
   KEYPAD_CHECK_INTERVAL = 0.25
   setkeypad(ROW_GPIOS, COLUMN_GPIOS)
 
   #Setting up stepper motor
-  MOTOR_PINS = [17, 18, 27, 22]
+  MOTOR_PINS = [int(h) for h in args.motor_pins.split(",")]
   stepperdriver.steppersetup(MOTOR_PINS)
+
+  logging.info("Keypad & stepper setup sucessfull!!")
 
   #Stepper reset angle
   step_reset = 0
@@ -117,5 +132,5 @@ if __name__ == "__main__":
       time.sleep(KEYPAD_CHECK_INTERVAL)
 
   except KeyboardInterrupt:
-    print("Closed")
+    logging.info("Closed")
     gpiocleanup()
