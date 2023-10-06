@@ -1,0 +1,8 @@
+#Ignore .git
+.git/
+
+#Ignore __pycache__
+__pycache__/
+
+#Ignore tests
+tests/

@@ -1,10 +1,16 @@
 #!/usr/bin/python3
 
-#sudo python3 stepper-test.py
+
+"""
+Stepper motor driver module.
+"""
+
 
 import RPi.GPIO as GPIO
 import time
 
+
+#Sets the RPI pins for driving the stepper
 def steppersetup(motor_pins:list) -> None:
 
   GPIO.setmode(GPIO.BCM)
@@ -23,10 +29,13 @@ def cleanup(motor_pins:list):
   #GPIO.cleanup()
 
 
+#Main stpper driving code
 def driver_stepper(angle:int, motor_pins:list) -> None:
   
   step_count = int(round((abs(angle)/360)*4096))
   motor_step_counter = 0
+
+  #Lower the STEP_SLEEP considering mechanical constraints of the motor
   STEP_SLEEP = 0.002
   direction = angle > 0
 

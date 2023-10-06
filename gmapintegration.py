@@ -1,16 +1,25 @@
+#!/usr/bin/python3
+
+
+"""
+Google Maps Integration module. This uses Google Maps API.
+"""
+
+
 import argparse
 import googlemaps
 import math
 import socket
-import logging
 
 
+#Returns the final angle from bearing and heading angles
 def final_angle(bearing:float, heading:float) -> int:
 
     f_angle = round(bearing-heading)
     return f_angle+360 if f_angle<-180 else f_angle
 
 
+#Returns the angle between north-south line and the line connecting current and desired location
 def get_bearing_angle(a:tuple, b:tuple) -> float:
     
     a = [math.radians(x) for x in a]
@@ -23,6 +32,7 @@ def get_bearing_angle(a:tuple, b:tuple) -> float:
     return BEARING_ANGLE
 
 
+#Returns the current device heading
 def get_heading(device_ip:str, udp_port:int) -> float:
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -37,7 +47,8 @@ def get_heading(device_ip:str, udp_port:int) -> float:
         sock.close()
         return X_ROT
 
-    
+
+#Returns the desired closest location coordinates and other details 
 def get_destination_coordinates(loc:tuple, place:str, api_key:str) -> tuple:
 
     loc_string = ",".join(loc)
@@ -54,6 +65,7 @@ def get_destination_coordinates(loc:tuple, place:str, api_key:str) -> tuple:
     return (nearest_place_lat, nearest_place_lng, nearest_place_name, nearest_place_vicinity)
 
 
+#Returns the current device coordinates
 def get_device_coordinates(device_ip:str, udp_port:int) -> tuple:
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

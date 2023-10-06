@@ -1,9 +1,18 @@
+#!/usr/bin/python3
+
+
+"""
+The compass effect module. It locks the needle no matter whichever direction you turn.
+"""
+
+
 import socket
 import time
 import stepperdriver
 import RPi.GPIO as GPIO
 
 
+#Read the current device heading
 def getr(HOST:str, PORT:int) -> float:
 
   sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -18,10 +27,13 @@ def getr(HOST:str, PORT:int) -> float:
   return X_ROT
 
 
+#Main compass effect code
 def compass_effect_driver(HOST:str, PORT:int, MOTOR_PINS, keypad_line, keypad_columns) -> int:
 
   old = 0.0
   delay = 0.05
+
+  #Used to tune the differnce in angle readings
   RESET_TUNING = 3.15
   reset_angle_correction = 0
 
@@ -52,6 +64,6 @@ def compass_effect_driver(HOST:str, PORT:int, MOTOR_PINS, keypad_line, keypad_co
     reset_check = GPIO.input(keypad_columns[3]) == 1
 
     if reset_check:
-      print("yeh")
+      print("exited compass effect")
       GPIO.output(keypad_line[3], GPIO.LOW)
       return reset_angle_correction 
