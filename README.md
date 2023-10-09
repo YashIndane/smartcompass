@@ -1,4 +1,4 @@
-![](https://img.shields.io/badge/Python-red?logo=Python&logoColor=white) ![](https://img.shields.io/badge/IOT-red?logo=IOT&logoColor=white) ![](https://img.shields.io/badge/Raspberry-red?logo=Raspberrypi&logoColor=white) ![](https://img.shields.io/badge/Google-Maps-red?logo=googlemaps&logoColor=white) ![](https://img.shields.io/badge/Docker-red?logo=docker&logoColor=white)
+![](https://img.shields.io/badge/Python-red?logo=Python&logoColor=white) ![](https://img.shields.io/badge/IOT-red?logo=IOT&logoColor=white) ![](https://img.shields.io/badge/Raspberry-red?logo=Raspberrypi&logoColor=white) ![](https://img.shields.io/badge/Google-Maps-red?logo=googlemaps&logoColor=white) ![](https://img.shields.io/badge/Docker-red?logo=docker&logoColor=white) ![](https://img.shields.io/badge/License-MIT-red)
 
 # Smartcompass
 A device to point towards the nearest required location 🧭
