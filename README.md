@@ -17,8 +17,6 @@ A device to point towards the nearest required location 🧭
 
 ![schemastepper](https://github.com/YashIndane/smartcompass/assets/53041219/3c0c334f-d2d8-420a-8cf2-87e701679541)
 
-# Installations
-
 ## Docker installation
 
 ```
