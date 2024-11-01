@@ -23,9 +23,9 @@ The buttons correspond to different places ->
 
 3 - Police Station
 
-4 - Petrol Pump
+A - Petrol Pump
 
-A - Mall
+4 - Mall
 
 5 - Pizza
 
@@ -37,7 +37,9 @@ B - Post Office
 
 8 - Railway Station
 
-C - Airport
+9 - Airport
+
+C - Gym
 
 `*` - Hotel
 
