@@ -57,7 +57,42 @@ The pi continously scans the keypad for a button press. Once a button is pressed
 
 Next the Pi calculates the Bearing Angle, using the coordinates fetched and the device coordinates received from HyperIMU stream. Then according to the device orientation, the final angle is calculated. This final angle is fed to stepper driver and the needle moves.
 
-After the needle points to the required direction, the needle gets locked in that direction. To return back to 0 degree mark, press Reset.
+Sample of code from gmapintegration.py that does the coordinates fetching -
+
+```python
+loc_string = ",".join(loc)
+
+gmaps_client = googlemaps.Client(key=api_key)
+place_result = gmaps_client.places_nearby(location=loc_string, keyword=place, rank_by="distance")
+
+nearest_place = place_result["results"][0]
+nearest_place_lat = nearest_place["geometry"]["location"]["lat"]
+nearest_place_lng = nearest_place["geometry"]["location"]["lng"]
+nearest_place_name = nearest_place["name"]
+nearest_place_vicinity = nearest_place["vicinity"]
+```
+
+## What is bearing angle?
+
+![image](https://github.com/user-attachments/assets/333bc0ee-f340-4e91-ba40-fd137adad600)
+
+It is the angle between the North-South direction line and the line connecting the current position point and destination position point.
+
+![image](https://github.com/user-attachments/assets/14ba3b77-f16c-434b-8656-35a486ae6576)
+
+Sample Code from gmapintegration.py computing the Bearing angle -
+
+```python
+a = [math.radians(x) for x in a]
+b = [math.radians(x) for x in b]
+diffLong = b[1]-a[1]
+X = (math.cos(b[0]))*(math.sin(diffLong))
+Y = math.cos(a[0])*math.sin(b[0])-math.sin(a[0])*math.cos(b[0])*math.cos(diffLong)
+B = math.atan2(X, Y)
+BEARING_ANGLE = math.degrees(B)
+```
+
+Then according to the device orientation, the final angle is calculated. This final angle is fed to stepper driver and the needle moves. After the needle points to the required direction, the needle gets locked in that direction. To return back to 0 degree mark, press Reset.
 
 
 # HyperIMU App
