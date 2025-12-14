@@ -77,8 +77,8 @@ class Stepper:
                 time.sleep(STEP_SLEEP)
 
         except KeyboardInterrupt:
-            self.cleanup(self.motor_pins)
+            self.cleanup()
             exit(1)
 
-        self.cleanup(self.motor_pins)
+        self.cleanup()
         #exit(0)

@@ -35,7 +35,7 @@ def compass_effect_driver(
     HOST: str,
     PORT: int,
     MOTOR_PINS: List[int],
-    keypad_line: List[int],
+    keypad_lines: List[int],
     keypad_columns: List[int],
 ) -> int:
     """Main compass effect code
@@ -59,29 +59,29 @@ def compass_effect_driver(
     stp.steppersetup()
 
     while True:
-        a: float = getr(HOST, PORT)
+        a: float = getr(HOST=HOST, PORT=PORT)
         time.sleep(delay)
-        b: float = getr(HOST, PORT)
+        b: float = getr(HOST=HOST, PORT=PORT)
 
         if (0<=a<45 and 270<=b<=360):
             an = int(round(RESET_TUNING * (b - a - 360)))
-            stp.driver_stepper(-an, MOTOR_PINS)
+            stp.driver_stepper(angle=-an)
             reset_angle_correction += an
 
         elif (0<=b<=45 and 270<=a<=360):
             an = int(round(RESET_TUNING * (b - a + 360)))
-            stp.driver_stepper(-an, MOTOR_PINS)
+            stp.driver_stepper(angle=-an)
             reset_angle_correction += an
 
         else:
             an = int(round(RESET_TUNING * (b - a)))
-            stp.driver_stepper(-an, MOTOR_PINS)
+            stp.driver_stepper(angle=-an)
             reset_angle_correction += an
 
-        GPIO.output(keypad_line[3], GPIO.HIGH)
+        GPIO.output(keypad_lines[3], GPIO.HIGH)
         reset_check: bool = GPIO.input(keypad_columns[3]) == 1
 
         if reset_check:
             print("exited compass effect")
-            GPIO.output(keypad_line[3], GPIO.LOW)
+            GPIO.output(keypad_lines[3], GPIO.LOW)
             return reset_angle_correction

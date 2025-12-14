@@ -116,7 +116,7 @@ def readline(*, line: int, characters: List[str], columns: List[int]) -> None:
         
             else:
                 if step_reset == 0:
-                    final_angle: int = processangle(place)
+                    final_angle: int = processangle(place=place)
                     logging.info(final_angle)
                     stp.driver_stepper(angle=final_angle)
                     reset_angle_correction: int = compass_effect_driver(
