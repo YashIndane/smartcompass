@@ -10,4 +10,4 @@ LABEL org.opencontainers.image.source https://github.com/yashindane/smartcompass
 
 COPY . ./
 
-ENTRYPOINT ["python", "./compass.py"]
+ENTRYPOINT ["python", "./main.py"]
