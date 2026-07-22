@@ -135,6 +135,19 @@ $ sudo docker pull --platform linux/arm64/v8 docker.io/yashindane/smartcompass:l
 
 ## Running the container
 
+### Option 1
+
 ```
-$ sudo docker run -it --platform linux/arm64/v8 --name smartcompass-con.$(date "+%Y.%m.%d-%H.%M.%S") --net=host --device /dev/gpiomem yashindane/smartcompass:v2 --ip="<IPV4-OF-PI>" --port=<UDP-PORT> --key="<GOOGLE-MAPS-API-KEY>" --keypad_rows="16,20,21,5" --keypad_cols="6,13,19,26" --motor_pins="17,18,27,22 --ncei_key="<NCEI_API_KEY>"
+$ sudo docker run -it --platform linux/arm64/v8 --name smartcompass-con.$(date "+%Y.%m.%d-%H.%M.%S") --net=host --device /dev/gpiomem yashindane/smartcompass:4 --ip="<IPV4_OF_PI>" --port=<UDP_PORT> --key="<GOOGLE_MAPS_API_KEY>" --keypad_rows="16,20,21,5" --keypad_cols="6,13,19,26" --motor_pins="17,18,27,22 --ncei_key="<NCEI_API_KEY>"
+```
+
+### Option 2
+```
+$ sudo docker run -it --platform linux/arm64/v8 --name smartcompass-con.$(date "+%Y.%m.%d-%H.%M.%S") --net=host --device /dev/gpiomem -v /proc/cpuinfo:/proc/cpuinfo -v /proc/device-tree:/proc/device-tree yashindane/smartcompass:4 --ip="<IPV4_OF_PI>" --port=<UDP_PORT> --key="GOOGLE_MAPS_API_KEY" --keypad_rows="16,20,21,5" --keypad_cols="6,13,19,26" --motor_pins="17,18,27,22" --ncei_key="NCEI_API_KEY"
+```
+
+### Option 3
+```
+$ echo -e "Hardware\t: BCM2835\nRevision\t: 902120" > /home/pi/fake_cpuinfo
+$ sudo docker run -it --platform linux/arm64/v8 --name smartcompass-con.$(date "+%Y.%m.%d-%H.%M.%S") --net=host --device /dev/gpiomem -v /home/pi/fake_cpuinfo:/proc/cpuinfo -v /proc/device-tree:/proc/device-tree yashindane/smartcompass:4 --ip="<IPV4_OF_PI>" --port=<UDP_PORT> --key="<GOOGLE_MAPS_API_KEY>" --keypad_rows="16,20,21,5" --keypad_cols="6,13,19,26" --motor_pins="17,18,27,22" --ncei_key="<NCEI_API_KEY>"
 ```
